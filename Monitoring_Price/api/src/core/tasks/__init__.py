@@ -1,0 +1,1 @@
+from .update_tasks import update_all_product_prices

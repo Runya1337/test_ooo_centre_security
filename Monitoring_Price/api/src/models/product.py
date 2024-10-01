@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from api.dependencies.database import Base
+from dependencies.database import Base
+
 
 class Product(Base):
     __tablename__ = "products"
@@ -10,7 +13,8 @@ class Product(Base):
     name = Column(String, nullable=False)
     description = Column(String)
     rating = Column(Float)
-
+    price = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
     price_history = relationship("PriceHistory", back_populates="product")
 
 class PriceHistory(Base):

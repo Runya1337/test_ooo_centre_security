@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Monitoring</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Подключаем Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h2>Добавление ссылки в Парс-Мониторинг</h2>
+            <form id="linkForm">
+                <input type="url" id="urlInput" placeholder="Enter URL" required>
+                <button type="submit">Start Monitoring</button>
+            </form>
+            <h2>График изменения цен</h2>
+            <canvas id="priceChart"></canvas> <!-- Холст для графика -->
+        </div>
+        <div class="center">
+            <h2>Наблюдаемые товары</h2>
+            <input type="text" id="searchInput" placeholder="Search...">
+            <ul id="monitoringList">
+                <!-- Monitoring items will be dynamically loaded here -->
+            </ul>
+        </div>
+        <div class="right">
+            <h2>История цен</h2>
+            <div id="priceHistoryContainer">
+                <table class="price-history-table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Цена</th>
+                        </tr>
+                    </thead>
+                    <tbody class="price-history-list">
+                        <!-- Данные по ценам будут загружены сюда -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

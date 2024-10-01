@@ -1,17 +1,27 @@
+version: '3.8'
+
 services:
   api:
-    build: ./api
+    build: api
     container_name: price_monitoring_api
     restart: always
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/price_monitoring
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - db
+      - redis
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
-    image: postgres:15
+    image: postgres:17
     container_name: price_monitoring_db
     restart: always
     environment:
@@ -23,6 +33,46 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:alpine
+    container_name: price_monitoring_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    build: api
+    container_name: price_monitoring_celery_worker
+    command: celery -A core.celery_main worker --loglevel=info  # Путь с учетом папки src
+    depends_on:
+      - redis
+      - db
+    restart: always
+    working_dir: /app  # Корневая рабочая директория проекта
+
+  celery_beat:
+    build: api
+    container_name: price_monitoring_celery_beat
+    command: celery -A core.celery_main beat --loglevel=info  # Указываем правильный файл celery_main
+    depends_on:
+      - redis
+      - db
+    restart: always
+    working_dir: /app  # Указали правильную рабочую директорию
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
 
 volumes:
   db_data:
