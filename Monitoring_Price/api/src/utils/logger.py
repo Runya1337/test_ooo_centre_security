@@ -1,13 +1,12 @@
 import logging
 import sys
+
 logger = logging.getLogger()
 # create formatter
-formatter = logging.Formatter(
-    fmt="%(asctime)s - %(levelname)s - %(message) s"
-)
+formatter = logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(message) s")
 
 stream_handler = logging.StreamHandler(sys.stdout)
-file_handler = logging.FileHandler('app.log')
+file_handler = logging.FileHandler("app.log")
 
 stream_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)

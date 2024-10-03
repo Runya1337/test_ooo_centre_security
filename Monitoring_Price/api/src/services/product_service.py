@@ -1,7 +1,11 @@
+import asyncio
 from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+from io import BytesIO
+import random
 
 from utils.parsers.parser import MVideoParser, OzonParser, AvitoParser
 from schemas.product_schema import ProductCreate, ProductOut, PriceHistoryOut
@@ -16,65 +20,91 @@ class ProductService:
         self.db = db
 
     @classmethod
+    # переделать на маппинг, однозначно распарсить. В виде Enum собрать маркетплейсы
     def parse_product_price(cls, url):
         if "mvideo" in url:
-            parser = MVideoParser()
+            parser = MVideoParser(url)
         elif "ozon" in url:
-            parser = OzonParser()
+            parser = OzonParser(url)
         elif "avito" in url:
-            parser = AvitoParser()
+            parser = AvitoParser(url)
         else:
+            # должен выдать другой экзепшен, можно кастомный, а сверху словить hhtp
             raise HTTPException(status_code=400, detail="Неизвестный источник")
-        return parser.parse(url)
+        return parser
 
-    def add_product(self, url: str) -> ProductOut:
-        # Используем метод parse_product_price для получения данных
-        parsed_data = self.parse_product_price(url)
-
-        # Создаем объект ProductCreate с данными из парсера
+    async def add_product(self, url: str) -> ProductOut:
+        parser = self.parse_product_price(url)
+        parsed_data = await parser.parse()
         product_create = ProductCreate(
             url=url,
-            name=parsed_data.get("title", "Default Name"),
+            name=parsed_data.get("name", "Default Name"),
             description=parsed_data.get("description", "Default Description"),
             rating=parsed_data.get("rating", 0),
-            price=parsed_data.get("price", 0.0)
+            price=parsed_data.get("price", 0.0),
         )
 
-        # Проверка на существование продукта с таким URL
         existing_product = self.repository.get_by_url(product_create.url)
         if existing_product:
             raise HTTPException(status_code=400, detail="Product already exists")
 
-        # Создание продукта в базе данных
         product = self.repository.create(product_create)
         return ProductOut.from_orm(product)
 
-    def update_price(self, product_id: int) -> ProductOut:
-        # Получаем продукт через репозиторий
+    async def update_price(self, product_id: int) -> ProductOut:
         product = self.repository.get_by_id(product_id)
 
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
 
-        # Обновляем цену продукта
-        parsed_data = self.parse_product_price(product.url)
-        new_price = parsed_data.get("price")
+        parser = self.parse_product_price(product.url)
+        new_price = await parser.get_price()
 
-        # Обновляем поле 'price' в объекте 'product'
         product.price = new_price
 
-        # Создаем новую запись в PriceHistory
         price_history_entry = PriceHistory(
             product_id=product.id,
             price=new_price,
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.utcnow().isoformat(),
         )
 
-        # Добавляем запись в историю и сохраняем изменения
         self.db.add(price_history_entry)
         self.db.commit()
 
-        # Обновляем объект 'product' после сохранения в базе данных
+        self.db.refresh(product)
+
+        return ProductOut.from_orm(product)
+
+    def make_fake_history(self, product_id: int) -> ProductOut:
+        product = self.db.query(Product).filter_by(id=product_id).first()
+
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        end_date = datetime.now() - timedelta(days=1)  # Вчера
+        start_date = end_date - timedelta(days=730)  # Два года назад
+        total_days = (end_date - start_date).days + 1  # Количество дней
+
+        current_price = (
+            product.price or 100.0
+        )
+
+        price_history_entries = []
+
+        for day in range(total_days):
+            date = start_date + timedelta(days=day)
+            price_change = random.uniform(-5, 5)
+            current_price += current_price * (price_change / 100)
+            current_price = max(current_price, 1.0)
+
+            price_history_entry = PriceHistory(
+                product_id=product.id, price=round(current_price, 2), timestamp=date
+            )
+            price_history_entries.append(price_history_entry)
+
+        self.db.bulk_save_objects(price_history_entries)
+        self.db.commit()
+
         self.db.refresh(product)
 
         return ProductOut.from_orm(product)
@@ -93,3 +123,6 @@ class ProductService:
     def get_price_history(self, product_id: int) -> List[PriceHistoryOut]:
         history = self.repository.get_price_history(product_id)
         return [PriceHistoryOut.from_orm(h) for h in history]
+
+    def search_products(self, name: str) -> List[Product]:
+        return self.repository.search_by_name(name)

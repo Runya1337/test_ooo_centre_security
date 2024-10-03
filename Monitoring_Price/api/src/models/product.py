@@ -17,6 +17,7 @@ class Product(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     price_history = relationship("PriceHistory", back_populates="product")
 
+
 class PriceHistory(Base):
     __tablename__ = "price_history"
 

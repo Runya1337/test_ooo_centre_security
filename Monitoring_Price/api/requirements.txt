@@ -1,8 +1,9 @@
-fastapi
-uvicorn
-sqlalchemy
-psycopg2-binary
-pydantic
-pydantic-settings
-celery
-redis
+fastapi==0.103.1
+uvicorn==0.23.0
+sqlalchemy==2.0.21
+psycopg2-binary==2.9.9
+pydantic==2.4.0
+pydantic-settings==2.0.3
+celery==5.3.4
+redis==5.4.0
+matplotlib==3.8.0

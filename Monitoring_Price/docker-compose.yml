@@ -42,12 +42,14 @@ services:
 
   celery_worker:
     build: api
-    container_name: price_monitoring_celery_worker
     command: celery -A core.celery_main worker --loglevel=info  # Путь с учетом папки src
     depends_on:
       - redis
       - db
     restart: always
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     working_dir: /app  # Корневая рабочая директория проекта
 
   celery_beat:
@@ -69,6 +71,22 @@ services:
       - ./frontend:/usr/share/nginx/html
     networks:
       - webnet
+
+  telegram_bot:
+    build: ./telegram_bot
+    container_name: telegram_bot
+    volumes:
+      - ./telegram_bot:/app
+    environment:
+      - TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+    env_file:
+      - ./telegram_bot/.env
+    depends_on:
+      - api
+    networks:
+      - webnet
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   webnet:

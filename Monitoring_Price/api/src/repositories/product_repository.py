@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from models.product import Product, PriceHistory
 from schemas.product_schema import ProductCreate
 
+
 class ProductRepository:
     def __init__(self, db: Session):
         self.db = db
@@ -17,7 +18,7 @@ class ProductRepository:
 
     def create(self, product_create: ProductCreate) -> Product:
         product_data = product_create.dict()
-        product_data['url'] = str(product_data['url'])  # Преобразуем Url в строку
+        product_data["url"] = str(product_data["url"])  # Преобразуем Url в строку
         product = Product(**product_data)
         self.db.add(product)
         self.db.commit()
@@ -32,4 +33,11 @@ class ProductRepository:
         return self.db.query(Product).all()
 
     def get_price_history(self, product_id: int) -> List[PriceHistory]:
-        return self.db.query(PriceHistory).filter(PriceHistory.product_id == product_id).all()
+        return (
+            self.db.query(PriceHistory)
+            .filter(PriceHistory.product_id == product_id)
+            .all()
+        )
+
+    def search_by_name(self, name: str) -> List[Product]:
+        return self.db.query(Product).filter(Product.name.ilike(f"%{name}%")).all()

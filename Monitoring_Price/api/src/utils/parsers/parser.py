@@ -1,55 +1,132 @@
 import random
-import time
+import asyncio
 from abc import ABC, abstractmethod
-
 from utils.parsers.product_list import names_products, product_dis
 
+
 class Parser(ABC):
-    list = []
+    def __init__(self, url):
+        self.url = url
+
+    async def get_page(self):
+        """Имитирует получение страницы с данными. Загружаем страницу при каждом запросе."""
+        await asyncio.sleep(random.uniform(0.5, 2))  # Имитация задержки сети
+        return {
+            "price": random.randint(1000, 100000),
+            "name": random.choice(names_products),
+            "description": random.choice(product_dis),
+            "rating": str(random.uniform(1, 5)),
+        }
+
     @abstractmethod
-    def parse(self, url: str):
+    async def parse(self):
+        """Основной метод парсинга, собирающий все данные."""
         pass
 
-# Абстрактный класс, который будет реализовывать общую логику
+
 class BaseParser(Parser):
-    def parse(self, url: str):
-        # Здесь может быть общая логика
-        return self.extract_data(url)
+    async def parse(self):
+        """Парсим все данные за один раз."""
+        page = await self.get_page()
+        return {
+            "price": await self.get_price(page),
+            "name": await self.get_name(page),
+            "description": await self.get_description(page),
+            "rating": await self.get_rating(page),
+        }
 
-    @abstractmethod
-    def extract_data(self, url: str):
-        pass
+    async def get_price(self, page=None):
+        """Получение цены с загрузкой страницы."""
+        if page is None:
+            page = (
+                await self.get_page()
+            )  # Загружаем страницу заново для актуальных данных
+        return page["price"]
 
-# Парсер для M.Video
+    async def get_name(self, page=None):
+        """Получение имени с загрузкой страницы."""
+        if page is None:
+            page = await self.get_page()
+        return page["name"]
+
+    async def get_description(self, page=None):
+        """Получение описания с загрузкой страницы."""
+        if page is None:
+            page = await self.get_page()
+        return page["description"]
+
+    async def get_rating(self, page=None):
+        """Получение рейтинга с загрузкой страницы."""
+        if page is None:
+            page = await self.get_page()
+        return page["rating"]
+
+
 class MVideoParser(BaseParser):
-    def extract_data(self, url: str):
-        # Условно спим, якобы парсим
-        time.sleep(random.randint(1, 20)/10)
-        return {
-            'price': random.randint(100, 100000),
-            'title': random.choice(names_products),
-            'description': random.choice(product_dis),
-            'rating': 5.0,  # Дефолтный рейтинг
-        }
+    async def get_price(self, page=None):
+        return await super().get_price(page)
 
-# Парсер для Ozon
+    async def get_name(self, page=None):
+        return await super().get_name(page)
+
+    async def get_description(self, page=None):
+        return await super().get_description(page)
+
+    async def get_rating(self, page=None):
+        return await super().get_rating(page)
+
+
 class OzonParser(BaseParser):
-    def extract_data(self, url: str):
-        # Возвращаем дефолтные значения
-        return {
-            'price': 100,
-            'title': 'Ozon Product Title',
-            'description': 'Ozon Product Description',
-            'rating': 4.5,  # Дефолтный рейтинг
-        }
+    async def get_price(self, page=None):
+        return await super().get_price(page)
 
-# Парсер для Авито
+    async def get_name(self, page=None):
+        return await super().get_name(page)
+
+    async def get_description(self, page=None):
+        return await super().get_description(page)
+
+    async def get_rating(self, page=None):
+        return await super().get_rating(page)
+
+
 class AvitoParser(BaseParser):
-    def extract_data(self, url: str):
-        # Возвращаем дефолтные значения
-        return {
-            'price': 100,
-            'title': 'Avito Product Title',
-            'description': 'Avito Product Description',
-            'rating': 4.0,  # Дефолтный рейтинг
-        }
+    async def get_price(self, page=None):
+        return await super().get_price(page)
+
+    async def get_name(self, page=None):
+        return await super().get_name(page)
+
+    async def get_description(self, page=None):
+        return await super().get_description(page)
+
+    async def get_rating(self, page=None):
+        return await super().get_rating(page)
+
+
+class OzonParser(BaseParser):
+    async def get_price(self, page=None):
+        return await super().get_price(page)
+
+    async def get_name(self, page=None):
+        return await super().get_name(page)
+
+    async def get_description(self, page=None):
+        return await super().get_description(page)
+
+    async def get_rating(self, page=None):
+        return await super().get_rating(page)
+
+
+class AvitoParser(BaseParser):
+    async def get_price(self, page=None):
+        return await super().get_price(page)
+
+    async def get_name(self, page=None):
+        return await super().get_name(page)
+
+    async def get_description(self, page=None):
+        return await super().get_description(page)
+
+    async def get_rating(self, page=None):
+        return await super().get_rating(page)
