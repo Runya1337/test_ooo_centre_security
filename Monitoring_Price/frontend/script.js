@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const priceChartCanvas = document.getElementById('priceChart').getContext('2d');
     let priceChart;
 
-    // Отправка ссылки в FastAPI на мониторинг
     linkForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const url = urlInput.value.trim();
@@ -42,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Функция для загрузки мониторинга
     async function loadMonitoringData() {
         try {
             const response = await fetch('http://127.0.0.1:8000/products/');
@@ -66,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 monitoringList.appendChild(li);
             });
 
-            // Добавляем обработчики на кнопки "Посмотреть историю цен"
             const historyButtons = document.querySelectorAll('.view-history-btn');
             historyButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
@@ -80,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Функция для загрузки истории цен и отображения графика
     async function loadPriceHistory(productId) {
         try {
             const response = await fetch(`http://127.0.0.1:8000/products/${productId}/history`);
@@ -90,9 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const labels = data.map(item => new Date(item.timestamp).toLocaleDateString());
             const prices = data.map(item => item.price);
 
-            // Отображение графика цен
             if (priceChart) {
-                priceChart.destroy(); // Уничтожаем предыдущий график перед созданием нового
+                priceChart.destroy();
             }
 
             priceChart = new Chart(priceChartCanvas, {
@@ -112,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     responsive: true,
                     plugins: {
                         legend: {
-                            display: false // Отключаем отображение легенды
+                            display: false
                         }
                     },
                     scales: {
@@ -133,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Отображение истории цен
             priceHistoryContainer.innerHTML = `
                 <table class="price-history-table">
                     <thead>
@@ -160,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Поиск по мониторингу
     searchInput.addEventListener('input', () => {
         const searchValue = searchInput.value.toLowerCase();
         const listItems = monitoringList.getElementsByTagName('li');
@@ -171,6 +164,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Обновление данных мониторинга каждую секунду
     setInterval(loadMonitoringData, 1000);
 });

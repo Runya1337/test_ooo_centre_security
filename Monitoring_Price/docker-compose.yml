@@ -42,7 +42,7 @@ services:
 
   celery_worker:
     build: api
-    command: celery -A core.celery_main worker --loglevel=info  # Путь с учетом папки src
+    command: celery -A core.celery_main worker --loglevel=info
     depends_on:
       - redis
       - db
@@ -50,17 +50,17 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    working_dir: /app  # Корневая рабочая директория проекта
+    working_dir: /app
 
   celery_beat:
     build: api
     container_name: price_monitoring_celery_beat
-    command: celery -A core.celery_main beat --loglevel=info  # Указываем правильный файл celery_main
+    command: celery -A core.celery_main beat --loglevel=info
     depends_on:
       - redis
       - db
     restart: always
-    working_dir: /app  # Указали правильную рабочую директорию
+    working_dir: /app
 
   frontend:
     build:
@@ -79,8 +79,6 @@ services:
       - ./telegram_bot:/app
     environment:
       - TELEGRAM_BOT_TOKEN=your-telegram-bot-token
-    env_file:
-      - ./telegram_bot/.env
     depends_on:
       - api
     networks:

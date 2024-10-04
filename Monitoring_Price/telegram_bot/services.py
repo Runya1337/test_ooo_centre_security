@@ -1,14 +1,11 @@
 import requests
 from dotenv import load_dotenv
 import os
-
-load_dotenv()
-
-API_URL = os.getenv("API_URL", "http://host.docker.internal:8000")
+from config import settings
 
 
 class ProductService:
-    def __init__(self, api_url=API_URL):
+    def __init__(self, api_url=settings.API_URL):
         self.api_url = api_url
 
     def add_product(self, url: str):

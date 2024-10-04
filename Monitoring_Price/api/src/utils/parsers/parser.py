@@ -40,7 +40,7 @@ class BaseParser(Parser):
         if page is None:
             page = (
                 await self.get_page()
-            )  # Загружаем страницу заново для актуальных данных
+            )
         return page["price"]
 
     async def get_name(self, page=None):

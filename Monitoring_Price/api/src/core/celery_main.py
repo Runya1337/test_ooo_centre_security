@@ -2,8 +2,6 @@ from datetime import timedelta
 
 from celery import Celery
 from core.config import settings
-from core.tasks.update_tasks import update_all_product_prices
-from celery.schedules import crontab
 
 
 TIMESTAMP_DAY = 1

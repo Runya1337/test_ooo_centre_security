@@ -1,7 +1,7 @@
-python-dotenv
+python-dotenv==1.0.0
 aiogram==2.25.1
-requests
-matplotlib
-pydantic
-pydantic_settings
-pandas
+requests==2.31.0
+matplotlib==3.7.5
+pydantic==2.4.0
+pydantic-settings==2.0.3
+pandas==2.0.3

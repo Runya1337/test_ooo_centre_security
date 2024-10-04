@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Price Monitoring</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Подключаем Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -17,13 +16,13 @@
                 <button type="submit">Start Monitoring</button>
             </form>
             <h2>График изменения цен</h2>
-            <canvas id="priceChart"></canvas> <!-- Холст для графика -->
+            <canvas id="priceChart"></canvas>
         </div>
         <div class="center">
             <h2>Наблюдаемые товары</h2>
             <input type="text" id="searchInput" placeholder="Search...">
             <ul id="monitoringList">
-                <!-- Monitoring items will be dynamically loaded here -->
+
             </ul>
         </div>
         <div class="right">
@@ -37,7 +36,7 @@
                         </tr>
                     </thead>
                     <tbody class="price-history-list">
-                        <!-- Данные по ценам будут загружены сюда -->
+
                     </tbody>
                 </table>
             </div>

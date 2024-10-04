@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
-from sqlalchemy.orm import Session
 
 from schemas.product_schema import ProductOut, PriceHistoryOut
 from services.product_service import ProductService
-from dependencies.database import get_db
 import logging
 
 logger = logging.getLogger("uvicorn")

@@ -3,8 +3,6 @@ from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
-from io import BytesIO
 import random
 
 from utils.parsers.parser import MVideoParser, OzonParser, AvitoParser
@@ -85,9 +83,7 @@ class ProductService:
         start_date = end_date - timedelta(days=730)  # Два года назад
         total_days = (end_date - start_date).days + 1  # Количество дней
 
-        current_price = (
-            product.price or 100.0
-        )
+        current_price = product.price or 100.0
 
         price_history_entries = []
 

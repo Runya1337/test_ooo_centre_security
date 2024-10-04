@@ -7,7 +7,6 @@ from chart_generator import PriceChartGenerator
 product_service = ProductService()
 
 
-# Обработчик команды /add
 async def add_link(message: types.Message):
     link = message.get_args()
     if link:
@@ -29,7 +28,6 @@ async def add_link(message: types.Message):
         await message.reply("Пожалуйста, укажите ссылку после команды /add.")
 
 
-# Обработчик команды /search
 async def search_product(message: types.Message):
     query = message.get_args()
     if query:
@@ -65,7 +63,6 @@ async def search_product(message: types.Message):
         )
 
 
-# Обработчик кнопки истории цен
 async def send_price_history(call: types.CallbackQuery):
     product_id = call.data.split(":")[1]
     response = product_service.get_price_history(product_id)
@@ -92,7 +89,6 @@ async def send_price_history(call: types.CallbackQuery):
         )
 
 
-# Функция для регистрации обработчиков
 def register_handlers(dp):
     dp.register_message_handler(add_link, commands=["add"])
     dp.register_message_handler(search_product, commands=["search"])

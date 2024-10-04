@@ -1,9 +1,6 @@
 import requests
-from datetime import datetime, timedelta
-import random
 
 
-# Функция для добавления продукта
 def add_fake_product(product_id, base_url, product_url_template):
     product_url = product_url_template + str(product_id)
     try:
