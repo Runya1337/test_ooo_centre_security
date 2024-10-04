@@ -64,7 +64,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: frontend
     ports:
       - "8080:80"
     volumes:
@@ -73,7 +73,7 @@ services:
       - webnet
 
   telegram_bot:
-    build: ./telegram_bot
+    build: telegram_bot
     container_name: telegram_bot
     volumes:
       - ./telegram_bot:/app
