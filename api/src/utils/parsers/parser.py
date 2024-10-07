@@ -9,7 +9,6 @@ class Parser(ABC):
         self.url = url
 
     async def get_page(self):
-        """Имитирует получение страницы с данными. Загружаем страницу при каждом запросе."""
         await asyncio.sleep(random.uniform(0.5, 2))  # Имитация задержки сети
         return {
             "price": random.randint(1000, 100000),
@@ -20,13 +19,11 @@ class Parser(ABC):
 
     @abstractmethod
     async def parse(self):
-        """Основной метод парсинга, собирающий все данные."""
         pass
 
 
 class BaseParser(Parser):
     async def parse(self):
-        """Парсим все данные за один раз."""
         page = await self.get_page()
         return {
             "price": await self.get_price(page),
@@ -36,7 +33,6 @@ class BaseParser(Parser):
         }
 
     async def get_price(self, page=None):
-        """Получение цены с загрузкой страницы."""
         if page is None:
             page = (
                 await self.get_page()
@@ -44,53 +40,22 @@ class BaseParser(Parser):
         return page["price"]
 
     async def get_name(self, page=None):
-        """Получение имени с загрузкой страницы."""
         if page is None:
             page = await self.get_page()
         return page["name"]
 
     async def get_description(self, page=None):
-        """Получение описания с загрузкой страницы."""
         if page is None:
             page = await self.get_page()
         return page["description"]
 
     async def get_rating(self, page=None):
-        """Получение рейтинга с загрузкой страницы."""
         if page is None:
             page = await self.get_page()
         return page["rating"]
 
 
 class MVideoParser(BaseParser):
-    async def get_price(self, page=None):
-        return await super().get_price(page)
-
-    async def get_name(self, page=None):
-        return await super().get_name(page)
-
-    async def get_description(self, page=None):
-        return await super().get_description(page)
-
-    async def get_rating(self, page=None):
-        return await super().get_rating(page)
-
-
-class OzonParser(BaseParser):
-    async def get_price(self, page=None):
-        return await super().get_price(page)
-
-    async def get_name(self, page=None):
-        return await super().get_name(page)
-
-    async def get_description(self, page=None):
-        return await super().get_description(page)
-
-    async def get_rating(self, page=None):
-        return await super().get_rating(page)
-
-
-class AvitoParser(BaseParser):
     async def get_price(self, page=None):
         return await super().get_price(page)
 
