@@ -18,7 +18,7 @@ class ProductService:
         self.db = db
 
     @classmethod
-    # переделать на маппинг, однозначно распарсить. В виде Enum собрать маркетплейсы
+    #TODO передать в маппинг
     def parse_product_price(cls, url):
         if "mvideo" in url:
             parser = MVideoParser(url)
